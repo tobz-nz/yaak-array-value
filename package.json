@@ -1,0 +1,27 @@
+{
+  "name": "@tobz-nz/array-value",
+  "displayName": "Array Value",
+  "description": "A Yaak plugin that allows you to get a value from a comma separated list by index",
+  "private": true,
+  "version": "0.0.1",
+  "author": "Toby Evans",
+  "keywords": [
+    "yaak",
+    "yaak-plugin",
+    "template",
+    "array",
+    "value"
+  ],
+  "scripts": {
+    "build": "yaak plugin build",
+    "dev": "yaak plugin dev"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  },
+  "dependencies": {
+    "@yaakapp/api": "^0.7.0"
+  }
+}
