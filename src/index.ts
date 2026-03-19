@@ -23,7 +23,12 @@ export const plugin: PluginDefinition = {
                 },
             ],
             async onRender(ctx: Context, args: CallTemplateFunctionArgs): Promise<string | null> {
-                return String(args.values.data || '').split(',')[Number(args.values.key || 0)]?.trim() || null;
+                let data = String(args.values.data || '').split(','),
+                    key = args.values.key ?? 0
+
+                return data.find(
+                    (s, i) => s.trim().toLowerCase() === String(key).trim().toLowerCase() || Number(key) === i)
+                    || null;
             }
         }
     ],
