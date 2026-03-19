@@ -31,6 +31,13 @@ ${[ array.value("first, second, third", "2") ]}
 // third
 ```
 
+You can also use the value to fetch ..the value. It does a lowercase match:
+
+```text
+${[ array.value("First, Second, Third", "second") ]}
+// Second
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
