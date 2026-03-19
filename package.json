@@ -2,6 +2,12 @@
   "name": "@tobz-nz/array-value",
   "displayName": "Array Value",
   "description": "A Yaak plugin that allows you to get a value from a comma separated list by index",
+  "homepage": "https://github.com/tobyevans/yaak-array-value",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tobyevans/yaak-array-value.git"
+  },
+  "license": "MIT",
   "private": true,
   "version": "0.0.1",
   "author": "Toby Evans",
