@@ -1,4 +1,5 @@
 import type { PluginDefinition, Context, CallTemplateFunctionArgs } from "@yaakapp/api";
+// import console from 'node:console';
 
 export const plugin: PluginDefinition = {
     templateFunctions: [
@@ -8,19 +9,30 @@ export const plugin: PluginDefinition = {
                 {
                     name: "data",
                     type: "text",
-                    label: "Data",
+                    label: "Options",
                     required: true,
-                    placeholder: "first,second,third",
+                    placeholder: "First Option,Second Option, Third Option",
                     description: "Comma separated values",
                 },
                 {
                     name: "key",
-                    type: "text",
-                    label: "Key",
+                    type: "select",
+                    label: "Selected Option",
                     required: false,
-                    placeholder: "0",
-                    description: "The index of the value to get",
-                },
+                    options: [],
+                    description: "The comparison type to use",
+                    dynamic: async (ctx, payload) => {
+                        return {
+                            options: payload.values.data.split(',')
+                                .map((value, index) => {
+                                    return {
+                                        label: value.trim(),
+                                        value: value.trim()
+                                    }
+                                })
+                        }
+                    }
+                }
             ],
             async onRender(ctx: Context, args: CallTemplateFunctionArgs): Promise<string | null> {
                 let data = String(args.values.data || '').split(','),
