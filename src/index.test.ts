@@ -4,67 +4,68 @@ import { plugin } from "./index";
 const arrayValue = plugin.templateFunctions?.find((f) => f.name === "array.value");
 
 describe("array.value template function", () => {
-  test("is registered on the plugin", () => {
+  test("is registered on the plugin and exposes expected args", () => {
     expect(plugin).toBeTypeOf("object");
     expect(plugin.templateFunctions).toBeInstanceOf(Array);
     expect(arrayValue).toBeTruthy();
     expect(arrayValue?.name).toBe("array.value");
     expect(arrayValue?.onRender).toBeTypeOf("function");
+
+    const dataArg = arrayValue?.args?.find((a: any) => a.name === "data");
+    const keyArg = arrayValue?.args?.find((a: any) => a.name === "key");
+
+    expect(dataArg).toBeTruthy();
+    expect(dataArg?.type).toBe("text");
+
+    expect(keyArg).toBeTruthy();
+    expect(keyArg?.type).toBe("select");
+    expect(keyArg?.dynamic).toBeTypeOf("function");
   });
 
-  test("defaults to index 0 when key is missing", async () => {
-    const res = await arrayValue!.onRender({} as any, { values: { data: "first,second" } } as any);
-    expect(res).toBe("first");
+  test("dynamic builds options from CSV data and trims values", async () => {
+    const keyArg = arrayValue!.args!.find((a: any) => a.name === "key")!;
+    const dyn = (keyArg as any).dynamic as any;
+
+    const payload = { values: { data: " first ,  second ,third " } };
+    const result = await dyn({}, payload);
+
+    expect(result).toHaveProperty("options");
+    expect(Array.isArray(result.options)).toBe(true);
+    expect(result.options).toEqual([
+      { label: "first", value: "first" },
+      { label: "second", value: "second" },
+      { label: "third", value: "third" },
+    ]);
   });
 
-  test("returns the value at the specified index", async () => {
-    const res = await arrayValue!.onRender(
-      {} as any,
-      { values: { data: "first,second,third", key: "2" } } as any,
-    );
-    expect(res).toBe("third");
+  test("dynamic uses templates.render when data starts with '${'", async () => {
+    const keyArg = arrayValue!.args!.find((a: any) => a.name === "key")!;
+    const dyn = (keyArg as any).dynamic as any;
+
+    const mockCtx = {
+      templates: {
+        render: async ({ data }: any) => {
+          // simulate rendering template returning CSV
+          return "one,two";
+        },
+      },
+    };
+
+    const payload = { values: { data: "${some.template}" } };
+    const result = await dyn(mockCtx as any, payload);
+
+    expect(result.options).toEqual([
+      { label: "one", value: "one" },
+      { label: "two", value: "two" },
+    ]);
   });
 
-  test("trims surrounding whitespace from the selected value", async () => {
-    const res = await arrayValue!.onRender(
-      {} as any,
-      { values: { data: " first ,  second  ,third  ", key: "1" } } as any,
-    );
-    expect(res).toBe("second");
+  test("onRender returns the selected key value as-is", async () => {
+    const res = await arrayValue!.onRender({} as any, { values: { key: "chosen-value" } } as any);
+    expect(res).toBe("chosen-value");
   });
 
-  test("returns null when data is empty or missing", async () => {
-    await expect(arrayValue!.onRender({} as any, { values: { data: "" } } as any)).resolves.toBeNull();
-    await expect(arrayValue!.onRender({} as any, { values: {} } as any)).resolves.toBeNull();
-  });
-
-  test("returns null when index is out of range", async () => {
-    const res = await arrayValue!.onRender(
-      {} as any,
-      { values: { data: "first,second", key: "99" } } as any,
-    );
-    expect(res).toBeNull();
-  });
-
-  test("returns null when key is not a number", async () => {
-    const res = await arrayValue!.onRender(
-      {} as any,
-      { values: { data: "first,second", key: "nope" } } as any,
-    );
-    expect(res).toBeNull();
-  });
-
-  test("returns null when the selected entry is blank after trimming", async () => {
-    const res1 = await arrayValue!.onRender(
-      {} as any,
-      { values: { data: "first,   ,third", key: "1" } } as any,
-    );
-    expect(res1).toBeNull();
-
-    const res2 = await arrayValue!.onRender(
-      {} as any,
-      { values: { data: "first,,third", key: "1" } } as any,
-    );
-    expect(res2).toBeNull();
+  test("onRender returns undefined when key is missing", async () => {
+    await expect(arrayValue!.onRender({} as any, { values: {} } as any)).resolves.toBeUndefined();
   });
 });

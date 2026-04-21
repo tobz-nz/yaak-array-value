@@ -1,6 +1,6 @@
 {
   "name": "@tobz-nz/array-value",
-  "displayName": "Array Value",
+  "displayName": "Selectable Enum",
   "description": "A Yaak plugin that allows you to get a value from a comma separated list by index",
   "homepage": "https://github.com/tobyevans/yaak-array-value",
   "repository": {
@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Toby Evans",
   "keywords": [
     "yaak",

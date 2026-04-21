@@ -13,11 +13,13 @@ const plugin = { templateFunctions: [{
 		name: "key",
 		type: "select",
 		label: "Selected Option",
-		required: false,
+		required: true,
 		options: [],
 		description: "The comparison type to use",
 		dynamic: async (ctx, payload) => {
-			return { options: payload.values.data.split(",").map((value, index) => {
+			let data = payload.values.data;
+			if (data.startsWith("${")) data = await ctx.templates.render({ data });
+			return { options: data.split(",").map((value, index) => {
 				return {
 					label: value.trim(),
 					value: value.trim()

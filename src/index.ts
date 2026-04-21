@@ -1,5 +1,4 @@
 import type { PluginDefinition, Context, CallTemplateFunctionArgs } from "@yaakapp/api";
-// import console from 'node:console';
 
 export const plugin: PluginDefinition = {
     templateFunctions: [
@@ -18,12 +17,17 @@ export const plugin: PluginDefinition = {
                     name: "key",
                     type: "select",
                     label: "Selected Option",
-                    required: false,
+                    required: true,
                     options: [],
                     description: "The comparison type to use",
                     dynamic: async (ctx, payload) => {
+                        let data = payload.values.data
+                        if (data.startsWith('${')) {
+                            data = await ctx.templates.render({data})
+                        }
+
                         return {
-                            options: payload.values.data.split(',')
+                            options: data.split(',')
                                 .map((value, index) => {
                                     return {
                                         label: value.trim(),
