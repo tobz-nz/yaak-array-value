@@ -26,8 +26,7 @@ const plugin = { templateFunctions: [{
 		}
 	}],
 	async onRender(ctx, args) {
-		let data = String(args.values.data || "").split(","), key = args.values.key ?? 0;
-		return data.find((s, i) => s.trim().toLowerCase() === String(key).trim().toLowerCase() || Number(key) === i) || null;
+		return args.values.key;
 	}
 }] };
 
